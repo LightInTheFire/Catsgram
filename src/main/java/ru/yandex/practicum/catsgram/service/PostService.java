@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -21,6 +22,10 @@ public class PostService {
 
     public Collection<Post> findAll() {
         return posts.values();
+    }
+
+    public Optional<Post> findById(Long id) {
+        return Optional.ofNullable(posts.get(id));
     }
 
     public Post create(Post post) {
