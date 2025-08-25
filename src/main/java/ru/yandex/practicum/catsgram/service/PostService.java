@@ -1,15 +1,14 @@
 package ru.yandex.practicum.catsgram.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.catsgram.controller.SortOrder;
 import ru.yandex.practicum.catsgram.exception.ConditionsNotMetException;
 import ru.yandex.practicum.catsgram.exception.NotFoundException;
 import ru.yandex.practicum.catsgram.model.Post;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -20,8 +19,17 @@ public class PostService {
         this.userService = userService;
     }
 
-    public Collection<Post> findAll() {
-        return posts.values();
+    public Collection<Post> findAll(SortOrder order, int size, int from) {
+        Comparator<Post> postInstantComparator = switch (order) {
+            case ASCENDING -> Comparator.comparing(Post::getPostDate);
+            case DESCENDING -> Comparator.comparing(Post::getPostDate).reversed();
+        };
+        return posts.values()
+                .stream()
+                .sorted(postInstantComparator)
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
     }
 
     public Optional<Post> findById(Long id) {
